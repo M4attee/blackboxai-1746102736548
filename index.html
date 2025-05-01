@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Negozio 3D Print - Slicer Tool</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+  />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/loaders/STLLoader.js"></script>
+</head>
+<body class="bg-gray-100 font-['Roboto'] min-h-screen flex flex-col items-center p-4">
+  <div class="max-w-3xl w-full bg-white rounded-lg shadow-lg p-6">
+    <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Negozio di Oggetti Stampati in 3D</h1>
+
+    <!-- Step 1: Registration -->
+    <section id="step-registration" class="step">
+      <h2 class="text-xl font-semibold mb-4">Registrazione</h2>
+      <form id="registration-form" class="space-y-4">
+        <div>
+          <label for="username" class="block font-medium mb-1">Nome utente</label>
+          <input type="text" id="username" name="username" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label for="email" class="block font-medium mb-1">Email</label>
+          <input type="email" id="email" name="email" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label for="password" class="block font-medium mb-1">Password</label>
+          <input type="password" id="password" name="password" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">Registrati</button>
+      </form>
+    </section>
+
+    <!-- Step 2: Upload 3D Model -->
+    <section id="step-upload" class="step hidden">
+      <h2 class="text-xl font-semibold mb-4">Carica il modello 3D (STL)</h2>
+      <input type="file" id="model-file" accept=".stl" class="mb-4" />
+      <div id="model-info" class="mb-4 text-gray-700"></div>
+      <button id="to-personal-data" disabled class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition">Procedi ai dati personali</button>
+    </section>
+
+    <!-- Step 3: Personal Data -->
+    <section id="step-personal-data" class="step hidden">
+      <h2 class="text-xl font-semibold mb-4">Dati Personali</h2>
+      <form id="personal-data-form" class="space-y-4">
+        <div>
+          <label for="nome" class="block font-medium mb-1">Nome</label>
+          <input type="text" id="nome" name="nome" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label for="cognome" class="block font-medium mb-1">Cognome</label>
+          <input type="text" id="cognome" name="cognome" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label for="stato" class="block font-medium mb-1">Stato/Nazione</label>
+          <input type="text" id="stato" name="stato" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label for="citta" class="block font-medium mb-1">Città</label>
+          <input type="text" id="citta" name="citta" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label for="via" class="block font-medium mb-1">Via</label>
+          <input type="text" id="via" name="via" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label for="cap" class="block font-medium mb-1">Codice Postale</label>
+          <input type="text" id="cap" name="cap" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <button type="submit" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition">Procedi al pagamento</button>
+      </form>
+    </section>
+
+    <!-- Step 4: Payment -->
+    <section id="step-payment" class="step hidden">
+      <h2 class="text-xl font-semibold mb-4">Pagamento</h2>
+      <form id="payment-form" class="space-y-4">
+        <div>
+          <label class="block font-medium mb-1">Metodo di pagamento</label>
+          <select id="payment-method" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="" disabled selected>Seleziona un metodo</option>
+            <option value="card">Carta di credito</option>
+            <option value="paypal">PayPal</option>
+          </select>
+        </div>
+
+        <div id="card-info" class="hidden space-y-4">
+          <div>
+            <label for="card-number" class="block font-medium mb-1">Numero carta</label>
+            <input type="text" id="card-number" maxlength="19" placeholder="1234 5678 9012 3456" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <div id="card-type-icon" class="mt-1 text-xl"></div>
+          </div>
+          <div>
+            <label for="card-cvv" class="block font-medium mb-1">CVV</label>
+            <input type="text" id="card-cvv" maxlength="4" placeholder="123" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+          <div>
+            <label for="card-holder" class="block font-medium mb-1">Titolare carta</label>
+            <input type="text" id="card-holder" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+        </div>
+
+        <button type="submit" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition">Conferma ordine</button>
+      </form>
+    </section>
+
+    <!-- Order Confirmation -->
+    <section id="order-confirmation" class="step hidden text-center">
+      <h2 class="text-2xl font-semibold mb-4 text-green-700">Ordine completato con successo!</h2>
+      <p class="mb-4">Grazie per aver acquistato con noi.</p>
+      <button id="go-to-admin" class="bg-gray-700 text-white py-2 px-4 rounded hover:bg-gray-800 transition">Vai alla pagina Admin</button>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
